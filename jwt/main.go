@@ -48,8 +48,9 @@ func main() {
 	privateKey := LoadRSAPrivateKeyFromDisk("/Users/tien.nguyenvan/Documents/ssh-key-grpc-proxy/grpc-proxy.key")
 	token := MakeSampleToken(jwt.MapClaims{
 		"authorized": "true",
-		"iss": "carem",
-		"sub": "carem",
+		"iss": "careem",
+		"sub": "careem",
+		"aud": "PASSENGER",
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}, privateKey)
 	fmt.Println(token)
