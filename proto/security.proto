@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package goe.security;
+
+import "google/protobuf/any.proto";
+
+option go_package = "security;security";
+
+message Settings {
+  map<string, Provider> providers = 1 ;
+}
+
+message Provider {
+  oneof provider_type {
+    TheAProvider the_a_provider = 1;
+    TheBProvider the_b_provider = 2;
+  }
+}
+
+message TheAProvider {
+  bool forward = 1;
+  repeated string from_params = 2;
+  map<string, string> forward_payload_headers = 3;
+}
+
+message TheBProvider {
+  string host = 1 ;
+  string path = 2 ;
+  string service_key = 3;
+  string service_token = 4;
+  string in = 5;
+  string name = 6;
+  uint64 timeout_in_ms = 7;
+}
