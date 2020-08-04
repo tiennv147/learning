@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package goe.http;
+
+import "google/protobuf/any.proto";
+
+option go_package = "http;http";
+
+
+message Settings {
+  string filter = 1;
+  bool crash_on_errors = 2;
+  google.protobuf.Any settings = 3;
+}
+
