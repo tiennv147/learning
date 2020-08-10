@@ -20,6 +20,18 @@ func LoadRSAPrivateKeyFromDisk(location string) *rsa.PrivateKey {
 	return key
 }
 
+func VerifyToken(tokenStr string, key interface{}) bool {
+	// Step 1: parse token by public rsa key, which is load by provider setting in the endpoint
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		return key, nil
+	} )
+	if err != nil {
+		fmt.Println(err.Error())
+		return false
+	}
+	return token.Valid
+}
+
 func LoadRSAPublicKeyFromDisk(location string) *rsa.PublicKey {
 	keyData, e := ioutil.ReadFile(location)
 	if e != nil {
@@ -45,6 +57,7 @@ func MakeSampleToken(c jwt.Claims, key interface{}) string {
 
 
 func main() {
+	fmt.Println("-----")
 	privateKey := LoadRSAPrivateKeyFromDisk("/Users/tien.nguyenvan/Documents/ssh-key-grpc-proxy/grpc-proxy.key")
 	token := MakeSampleToken(jwt.MapClaims{
 		"authorized": "true",
@@ -54,4 +67,19 @@ func main() {
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	}, privateKey)
 	fmt.Println(token)
+	fmt.Println("-----")
+
+	privateKey2 := LoadRSAPrivateKeyFromDisk("/Users/tien.nguyenvan/Documents/ssh-key-test/test-uber.key")
+	token2 := MakeSampleToken(jwt.StandardClaims{
+		Audience: "ENTERPRISE",
+		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+		Id: "d34192bb-dd00-4de6-b333-4149e3c183a0",
+		IssuedAt: time.Now().Unix(),
+		Issuer: "Uber",
+		NotBefore: time.Now().Unix(),
+		Subject: "d34192bb-dd00-4de6-b333-4149e3c183a0",
+	}, privateKey2)
+	fmt.Println(token2)
+
+	fmt.Println(VerifyToken(token2, privateKey2.Public()))
 }
